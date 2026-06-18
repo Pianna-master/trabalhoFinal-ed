@@ -35,6 +35,20 @@ typedef struct tree {
 	NodeUsuario *raizUsuario;
 } Arvore;
 
+// TAD lista simples (Para a busca por autor)
+
+typedef struct nodo {
+	Livro *valor;
+	struct nodo *next;
+} NodeLista;
+
+void printaLista(NodeLista *f) {
+	if (f != NULL) {
+		printf("%s\n", f->valor->autor);
+		printaLista(f->next);
+	}
+}
+
 // Funções gerais para a Arvore
 
 Arvore *iniciaArvore(void) {
@@ -58,7 +72,7 @@ NodeLivro *adicionaLivro(NodeLivro *raiz, NodeLivro *novo) {
 	if (raiz == NULL) {
 		return novo;
 	} else {
-		if (raiz->valor->id >= novo->valor->id) raiz->right = adicionaLivro(raiz->right, novo); 
+		if (raiz->valor->id <= novo->valor->id) raiz->right = adicionaLivro(raiz->right, novo); 
 		else raiz->left = adicionaLivro(raiz->left, novo);
 	}
 	return raiz;
@@ -68,9 +82,29 @@ NodeLivro *achaLivro(NodeLivro *raiz, int id) {
 	if (raiz == NULL || raiz->valor->id == id) {
 		return raiz;
 	}
-	if (raiz->valor->id > id) return achaLivro(raiz->right, id);
+	if (raiz->valor->id < id) return achaLivro(raiz->right, id);
 	else return achaLivro(raiz->left, id);
 	return raiz;
+}
+
+NodeLista *achaLivroAutor(NodeLivro *raiz, char *autor, NodeLista *first) {
+	printf("Nodo: %p\n", raiz);
+	if (raiz == NULL) return first;
+	achaLivroAutor(raiz->left, autor, first);
+	if (strcmp(raiz->valor->autor, autor) == 0) {
+		NodeLista *novo = (NodeLista *)malloc(sizeof(NodeLista));
+		novo->valor = raiz->valor;
+		novo->next = NULL;
+		if (first == NULL) {
+			first = novo;
+		} else {
+			NodeLista *aux = NULL;
+			for (aux=first;aux->next!=NULL;aux=aux->next);
+			aux->next = novo;
+		}
+	}
+	achaLivroAutor(raiz->right, autor, first);
+	return first;
 }
 
 void trocaLivro(NodeLivro *raiz, Livro *livro) {
@@ -81,7 +115,7 @@ void trocaLivro(NodeLivro *raiz, Livro *livro) {
 	if (raiz->valor->id == livro->id) {
 		raiz->valor = livro;
 	}
-	if (raiz->valor->id > livro->id) trocaLivro(raiz->right, livro);
+	if (raiz->valor->id < livro->id) trocaLivro(raiz->right, livro);
 	else trocaLivro(raiz->left, livro);
 }
 
@@ -143,12 +177,28 @@ int main(void)
 	
 	Livro *livro = (Livro *)malloc(sizeof(Livro));
 	livro->id = 1;
+	livro->autor = "Teste";
+	
+	Livro *livro2 = (Livro *)malloc(sizeof(Livro));
+	livro2->id = 2;
+	livro2->autor = "Teste";
 	
 	NodeLivro *novo = iniciaNodeLivro(livro);
+	NodeLivro *novo2 = iniciaNodeLivro(livro2);
 	
 	arvore->raizLivro = adicionaLivro(arvore->raizLivro, novo);
-	
+	arvore->raizLivro = adicionaLivro(arvore->raizLivro, novo2);
+
 	printf("%p\n",achaLivro(arvore->raizLivro, 1));
+	printf("%p\n",achaLivro(arvore->raizLivro, 2));
+	
+	printf("\n arvore aqui \n\n");
+	
+	NodeLista *lista = achaLivroAutor(arvore->raizLivro, "Teste", NULL);
+	
+	printf("\n printando usuario aqui \n\n");
+	
+	printaLista(lista);
 	
 	return 0;
 }
