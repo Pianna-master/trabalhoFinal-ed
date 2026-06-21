@@ -192,7 +192,7 @@ void criaNovaArvoreUsuario(NodeUsuario *raiz, Arvore *arvoreNova, char *email) {
 	criaNovaArvoreUsuario(raiz->right, arvoreNova, email);
 }
 
-NodeUsuario *removeUsuario(NodeUsuario *raiz, char *email) {
+NodeUsuario* removeUsuario(NodeUsuario *raiz, char *email) {
 	
 	Arvore *arvoreTemp = iniciaArvore();
 	criaNovaArvoreUsuario(raiz, arvoreTemp, email);
