@@ -132,6 +132,21 @@ NodeLista *achaLivroEmail(NodeLivro *raiz, char *email, NodeLista *first) {
 	return first;
 }
 
+void criaNovaArvore(NodeLivro *raiz, Arvore *arvoreNova, int id) {
+	if (raiz == NULL) return;
+	if (raiz->valor->id != id) arvoreNova->raizLivro = adicionaLivro(arvoreNova->raizLivro, raiz);
+	criaNovaArvore(raiz->left, arvoreNova, id);
+	criaNovaArvore(raiz->right, arvoreNova, id);
+}
+
+NodeLivro *removeLivro(NodeLivro *raiz, int id) {
+	
+	Arvore *arvoreTemp = iniciaArvore();
+	criaNovaArvore(raiz, arvoreTemp, id);
+	return arvoreTemp->raizLivro;
+}
+
+
 // Funções para Arvore de Usuarios
 
 NodeUsuario *iniciaNodeUsuario(Usuario *usuario) {
@@ -168,6 +183,20 @@ NodeUsuario *achaUsuarioEmail(NodeUsuario *raiz, char* email) {
 	if (strcmp(raiz->valor->email, email) >= 0) return achaUsuarioEmail(raiz->right, email);
 	else return achaUsuarioEmail(raiz->left, email);
 	return raiz;
+}
+
+void criaNovaArvoreUsuario(NodeUsuario *raiz, Arvore *arvoreNova, char *email) {
+	if (raiz == NULL) return;
+	if (strcmp(raiz->valor->email, email) != 0) arvoreNova->raizUsuario = adicionaUsuario(arvoreNova->raizUsuario, raiz);
+	criaNovaArvoreUsuario(raiz->left, arvoreNova, email);
+	criaNovaArvoreUsuario(raiz->right, arvoreNova, email);
+}
+
+NodeUsuario *removeUsuario(NodeUsuario *raiz, char *email) {
+	
+	Arvore *arvoreTemp = iniciaArvore();
+	criaNovaArvoreUsuario(raiz, arvoreTemp, email);
+	return arvoreTemp->raizUsuario;
 }
 
 // Funções da biblioteca 
@@ -446,7 +475,59 @@ void atualiza(Arvore *arvore) {
 }
 
 void remover(Arvore *arvore) {
-	
+		int seletor = 1;
+
+	while (seletor != 0) {
+		// Comando para limpar console
+		system("clear");
+		printf("Selecione uma das seguintes opções: \n1. Livros \n2. Usuarios \n0.Sair \n\nDigite sua escolha: ");
+		scanf("%d", &seletor);	
+		
+		switch(seletor) {
+			case 1:
+				// Comando para limpar console
+				system("clear");
+				
+				// Livro
+
+				int id = 0;
+
+				printf("Digite o Id do livro que sera removido: ");
+				scanf("%d", &id);	
+				
+				NodeLivro *livro = achaLivro(arvore->raizLivro, id);
+				
+				if (livro == NULL) {
+					printf("Livro não encontrado.");
+					break;
+				}
+				
+				arvore->raizLivro = removeLivro(arvore->raizLivro, id);
+				
+				break;
+			case 2:
+				// Comando para limpar console
+				system("clear");
+				
+				// Usuario
+				
+				char email[50];
+
+				printf("Digite o email do usuario que sera removido: ");
+				scanf("%s", email);	
+				
+				NodeUsuario *usuario = achaUsuarioEmail(arvore->raizUsuario, email);
+				
+				if (usuario == NULL) {
+					printf("Usuario não encontrado.");
+					break;
+				}
+				
+				arvore->raizUsuario = removeUsuario(arvore->raizUsuario, email);
+
+				break;
+				}	 
+		}
 }
 
 void emprestimo(Arvore *arvore) {
