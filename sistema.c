@@ -132,21 +132,6 @@ NodeLista *achaLivroEmail(NodeLivro *raiz, char *email, NodeLista *first) {
 	return first;
 }
 
-void trocaLivro(NodeLivro *raiz, Livro *livro) {
-	if (raiz == NULL) {
-		printf("\nLivro não encontrado.\n");
-		return;
-	}
-	if (raiz->valor->id == livro->id) {
-		Livro *aux = raiz->valor;
-		raiz->valor = livro;
-		free(aux);
-		return;
-	}
-	if (raiz->valor->id < livro->id) trocaLivro(raiz->right, livro);
-	else trocaLivro(raiz->left, livro);
-}
-
 // Funções para Arvore de Usuarios
 
 NodeUsuario *iniciaNodeUsuario(Usuario *usuario) {
@@ -183,18 +168,6 @@ NodeUsuario *achaUsuarioEmail(NodeUsuario *raiz, char* email) {
 	if (strcmp(raiz->valor->email, email) >= 0) return achaUsuarioEmail(raiz->right, email);
 	else return achaUsuarioEmail(raiz->left, email);
 	return raiz;
-}
-
-void trocaUsuario(NodeUsuario *raiz, Usuario *usuario) {
-	if (raiz == NULL) {
-		printf("\nUsuario não encontrado.");
-		return;
-	}
-	if (strcmp(raiz->valor->email, usuario->email) == 0) {
-		raiz->valor = usuario;
-	}
-	if (strcmp(raiz->valor->email, usuario->email) >= 0) trocaUsuario(raiz->right, usuario);
-	else trocaUsuario(raiz->left, usuario);
 }
 
 // Funções da biblioteca 
@@ -278,8 +251,7 @@ void consulta(Arvore *arvore) {
 	int seletor = 1;
 
 	while (seletor != 0) {
-		// Comando para limpar console
-		system("clear");
+
 		printf("Selecione uma das seguintes opções: \n1. Livros \n2. Usuarios \n3. Emprestimos \n0. Sair \n\nDigite sua escolha: ");
 		scanf("%d", &seletor);	
 		
@@ -416,6 +388,8 @@ void atualiza(Arvore *arvore) {
 					printf("O'que gostaria de atualizar? \n1. Titulo \n2. Autor \n3. Ano \n0. Sair \n\nDigite sua escolha: ");
 					scanf("%d", &seletorLivro);
 					
+					if (seletorLivro == 0) break;
+					
 					int id = 0;
 					printf("Digite o Id do livro que gostaria de atualizar: ");
 					scanf("%d", &id);
@@ -447,7 +421,6 @@ void atualiza(Arvore *arvore) {
 							livro->valor->anoPubli = anoPubli;				
 							break;
 					}
-					trocaLivro(arvore->raizLivro, livro->valor);
 				}
 				break;
 			case 2:
@@ -467,11 +440,39 @@ void atualiza(Arvore *arvore) {
 				scanf("%s", nome);
 				strcpy(usuario->valor->nome, nome);
 				
-				trocaUsuario(arvore->raizUsuario, usuario->valor);
-				
 				break;
 		}
 	}
+}
+
+void remover(Arvore *arvore) {
+	
+}
+
+void emprestimo(Arvore *arvore) {
+	int id = 0;
+	
+	printf("Digite o Id do livro que deseja pegar emprestado: ");
+	scanf("%d", &id);
+	
+	NodeLivro *livro = achaLivro(arvore->raizLivro ,id);
+	
+	if (livro == NULL) {
+		printf("Livro não encontrado.");
+		return;
+	}
+	
+	char email[50];
+	printf("Digite o email do usuario que fara o emprestimo: ");
+	scanf("%s", email);
+	strcpy(livro->valor->email, email);
+	livro->valor->status = 1;
+	
+	printf("Livro emprestado!\n\n");
+}
+
+void devolucao(Arvore *arvore) {
+	
 }
 
 // Main
@@ -499,13 +500,13 @@ int main(void)
 				atualiza(arvore);
 				break;
 			case 4:
-				
+				remover(arvore);
 				break;
 			case 5:
-				
+				emprestimo(arvore);
 				break;
 			case 6:
-				
+				devolucao(arvore);
 				break;
 		}
 	}
