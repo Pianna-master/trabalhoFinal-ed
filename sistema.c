@@ -177,12 +177,15 @@ NodeUsuario *achaUsuarioNome(NodeUsuario *raiz, char* nome) {
 }
 
 NodeUsuario *achaUsuarioEmail(NodeUsuario *raiz, char* email) {
-	if (raiz == NULL || strcmp(raiz->valor->email, email) == 0) {
-		return raiz;
-	}
-	if (strcmp(raiz->valor->email, email) >= 0) return achaUsuarioEmail(raiz->right, email);
-	else return achaUsuarioEmail(raiz->left, email);
-	return raiz;
+	if (raiz == NULL) return NULL;
+	
+	// Foi tentado busca binária, mas a árvore não é ordenada por e-mail, mas sim por nome
+	if (strcmp(raiz->valor->email, email) == 0) return raiz;
+	
+	NodeUsuario *resultadoEsq = achaUsuarioEmail(raiz->left, email);
+	if (resultadoEsq != NULL) return resultadoEsq;
+	
+	return achaUsuarioEmail(raiz->right, email);
 }
 
 void criaNovaArvoreUsuario(NodeUsuario *raiz, Arvore *arvoreNova, char *email) {
