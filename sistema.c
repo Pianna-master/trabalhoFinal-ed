@@ -114,7 +114,7 @@ NodeLista *achaLivroAutor(NodeLivro *raiz, char *autor, NodeLista *first) {
 
 NodeLista *achaLivroEmail(NodeLivro *raiz, char *email, NodeLista *first) {
 	if (raiz == NULL) return first;
-	first = achaLivroAutor(raiz->left, email, first);
+	first = achaLivroEmail(raiz->left, email, first); // era achaLivroAutor
 	if (strcmp(raiz->valor->email, email) == 0) {
 		NodeLista *novo = (NodeLista *)malloc(sizeof(NodeLista));
 		novo->valor = raiz->valor;
@@ -123,12 +123,11 @@ NodeLista *achaLivroEmail(NodeLivro *raiz, char *email, NodeLista *first) {
 			first = novo;
 		} else {
 			NodeLista *aux = NULL;
-			// Percorre lista ate achar o ultimo nodo
 			for (aux=first;aux->next!=NULL;aux=aux->next);
 			aux->next = novo;
 		}
 	}
-	first = achaLivroAutor(raiz->right, email, first);
+	first = achaLivroEmail(raiz->right, email, first); // era achaLivroAutor
 	return first;
 }
 
