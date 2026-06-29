@@ -545,9 +545,21 @@ void emprestimo(Arvore *arvore) {
 		return;
 	}
 	
+
+	if (livro->valor->status == 1) {
+		printf("Livro já está emprestado.\n\n");
+		return;
+	}
+	
 	char email[50];
 	printf("Digite o email do usuario que fara o emprestimo: ");
 	scanf("%s", email);
+
+	if (achaUsuarioEmail(arvore->raizUsuario, email) == NULL) {
+		printf("Usuario não encontrado.\n\n");
+		return;
+	}
+
 	strcpy(livro->valor->email, email);
 	livro->valor->status = 1;
 	
@@ -564,6 +576,11 @@ void devolucao(Arvore *arvore) {
 	
 	if (livro == NULL) {
 		printf("Livro não encontrado.");
+		return;
+	}
+
+	if (livro->valor->status == 0) {
+		printf("Livro não estava emprestado.\n\n");
 		return;
 	}
 	
